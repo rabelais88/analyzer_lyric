@@ -16,7 +16,7 @@ parse(srcText,result=>{
     var word = result[i][0]
     var pos = result[i][1]
     if (word=="EOS") continue
-    if (pos.includes("NNG")){
+    if (pos=="SL" && word.length > 1){
       console.log(word+":"+pos)
     }
   }

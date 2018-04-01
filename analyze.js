@@ -1,6 +1,8 @@
 const fs = require('fs');
 const resDir = './res/';
 const analyzer = require('./mecab-mod.js');
+const wordpos = require('wordpos');
+const wp = new wordpos();
 
 (async () =>{
   console.log(`------lyric analyzer -----------------------`)
@@ -10,7 +12,11 @@ const analyzer = require('./mecab-mod.js');
   })
   console.log(`------${artists.length} artist(s) total`)
   const resFinal = {
-     word:{}
+     wordKR:{},
+     wordEN:{},
+     wordArtists:{},
+     avgEN:[],
+     avgKR:[]
   }
   for(var i=0;i < artists.length; i++){
      console.log(`-------analyzing ${i+ 1} / ${artists.length + 1} artists------------`)
@@ -19,8 +25,10 @@ const analyzer = require('./mecab-mod.js');
 
     let resArtist = {
       totalAmount: 0,
-      averageAmount : 0,
-      word: {}, //all unique word repetitions
+      avgEN: [],
+      avgKR: [],
+      wordKR: {}, //all unique word repetitions
+      wordEN: {},
       tracks:[] //how many unique words are used per a track(later calculated into average)
     }    
 
@@ -31,47 +39,105 @@ const analyzer = require('./mecab-mod.js');
       //lyrics analyzation
       let resAnal = await analyze(targetLyric)
       //unique words per track
-      let trackWord = {
+      let trackWordKR = {
 
       }
-      let trackTotal = 0 //amount of total words per track
+      let trackWordENtmp = []
+      let trackUniqueTotal = 0 //amount of total words per track
+      let trackEN = 0
+      let trackKR = 0
+      let trackTotal = 0
 
       resAnal.map(elMorp=>{
-        if(elMorp[1] === 'NNG'){ //if the word is a distinctive noun
-
+        const targetType = elMorp[1]
+        const targetWord = elMorp[0]
+        if(targetType === 'NNG'){ //if the word is a distinctive noun
+          trackKR ++
+          trackTotal ++
           //for track
-          if(trackWord[elMorp[0]]){
-            trackWord[elMorp[0]]++
+          if(trackWordKR[targetWord]){
+            trackWordKR[targetWord]++
           }else{
-            trackWord[elMorp[0]]=1
-            trackTotal ++ // increase unique number of word per track
+            trackWordKR[targetWord]=1
+            trackUniqueTotal ++ // increase unique number of word per track
           }
 
           //for artists
-          if(resArtist.word[elMorp[0]]){
-            resArtist.word[elMorp[0]]++
+          if(resArtist.wordKR[targetWord]){
+            resArtist.wordKR[targetWord]++
           }else{
-            resArtist.word[elMorp[0]] = 1
+            resArtist.wordKR[targetWord] = 1
           }
 
           //for total
-          if(resFinal.word[elMorp[0]]){
-            resFinal.word[elMorp[0]]++
+          if(resFinal.wordKR[targetWord]){
+            resFinal.wordKR[targetWord]++
           }else{
-            resFinal.word[elMorp[0]] = 1
+            resFinal.wordKR[targetWord] = 1
+          }
+        }else if(targetType === 'SL' && targetWord.length > 2){
+          trackEN ++
+          trackTotal ++
+          if( wordpos.stopwords.indexOf(targetWord) === -1) { // if the targetted english word is not stopword
+            if(resArtist.wordEN[targetWord]){
+              resArtist.wordEN[targetWord] ++
+            }else{
+              resArtist.wordEN[targetWord] = 1
+            }
+            
+            if(resFinal.wordEN[targetWord]){
+              resFinal.wordEN[targetWord] ++
+            }else{
+              resFinal.wordEN[targetWord] = 1
+            }
           }
         }
       })
       resArtist.tracks.push(trackTotal)
+      
+      //average KR/EN ratio per a track
+      resArtist.avgEN.push(trackEN / trackTotal)
+      resArtist.avgKR.push(trackKR / trackTotal)
     }
     //console.log(resArtist)
     //SUM UP INDIVIDUAL RESULT WITH REST
-    await writeF(resDir + artists[i] + '.txt', JSON.stringify(resArtist))
+    //await writeF(resDir + artists[i] + '.txt', JSON.stringify(resArtist))
+
+    for(var k=0;k<Object.keys(resArtist.wordKR).length;k++){
+      const tWord = Object.keys(resArtist.wordKR)[k]
+      if(resFinal.wordArtists[tWord]){
+        resFinal.wordArtists[tWord].push(resArtist.wordKR[tWord],artists[i])
+      }else{
+        resFinal.wordArtists[tWord] = [resArtist.wordKR[tWord],artists[i]]
+      }
+    }
+
+    for(var k=0;k<Object.keys(resArtist.wordEN).length;k++){
+      const tWord = Object.keys(resArtist.wordEN)[k]
+      if(resFinal.wordArtists[tWord]){
+        resFinal.wordArtists[tWord].push(resArtist.wordEN[tWord],artists[i])
+      }else{
+        resFinal.wordArtists[tWord] = [resArtist.wordEN[tWord],artists[i]]
+      }
+    }
+    
+    //average Korean/English ratio of the artist
+
+    resArtist.avgEN = resArtist.avgEN.reduce((total,num)=>{return total + num}) / resArtist.avgEN.length
+    resArtist.avgKR = resArtist.avgKR.reduce((total,num)=>{return total + num}) / resArtist.avgKR.length
+
+    resFinal.avgEN.push([artists[i],resArtist.avgEN])
+    resFinal.avgKR.push([artists[i],resArtist.avgKR])
+    console.log(`the ${artists[i]} average of KR vs EN : ${resArtist.avgKR} vs ${resArtist.avgEN}`)
+   //resFinal[artists[i]] = Object.assign(resArtist)
 
   }
   //console.log(resFinal)
   //WRITE FINAL RESULT HERE
   await writeF(resDir + '/final.txt', JSON.stringify(resFinal))
+
+
+  
 })()
 
 function analyze(txt){

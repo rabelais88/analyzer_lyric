@@ -1,0 +1,25 @@
+{
+  "name": "node-mecab",
+  "version": "1.0.0",
+  "description": "",
+  "main": "analyze.js",
+  "dependencies": {
+    "wordnet-db": "^3.1.6",
+    "wordpos": "^1.1.6"
+  },
+  "devDependencies": {},
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rabelais88/analyzer_lyric.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/rabelais88/analyzer_lyric/issues"
+  },
+  "homepage": "https://github.com/rabelais88/analyzer_lyric#readme"
+}
