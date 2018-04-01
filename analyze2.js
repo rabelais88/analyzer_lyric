@@ -22,16 +22,35 @@ if(!fs.existsSync(finalDir)){
 
   await writeF(finalDir + 'mostUsedKoreanWord.txt', aryStringify(KRsorted))
   
-
+  
+  /*
   for(var i = 0;i > 30;i ++){
     //FIND TOP 30 MOST USED WORD FROM HERE
     const tWord = KRsorted[i][0]
     resFinal.wordArtists[tWord].sort((a,b)=>{
       return b[1] - a[1]
     })
-    resFinal.wordArtists[tWord]
-
   }
+  */
+
+  let lover = resFinal.wordArtists['사랑'].sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoLovesTheMost.txt',aryStringify(lover))
+  lover = []
+
+
+  let dick = resFinal.wordArtists['좆'].sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoDickTheMost.txt',aryStringify(dick))
+  dick = []
+
+  let poop = resFinal.wordArtists['똥'].sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoPoopTheMost.txt',aryStringify(poop))
+  poop = []
 
   sortable = []
   for (elWord in resFinal.wordEN) {

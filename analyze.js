@@ -106,18 +106,20 @@ const wp = new wordpos();
     for(var k=0;k<Object.keys(resArtist.wordKR).length;k++){
       const tWord = Object.keys(resArtist.wordKR)[k]
       if(resFinal.wordArtists[tWord]){
-        resFinal.wordArtists[tWord].push(resArtist.wordKR[tWord],artists[i])
+        resFinal.wordArtists[tWord].push([artists[i],resArtist.wordKR[tWord]])
       }else{
-        resFinal.wordArtists[tWord] = [resArtist.wordKR[tWord],artists[i]]
+        resFinal.wordArtists[tWord] = []
+        resFinal.wordArtists[tWord].push([artists[i], resArtist.wordKR[tWord]])
       }
     }
 
     for(var k=0;k<Object.keys(resArtist.wordEN).length;k++){
       const tWord = Object.keys(resArtist.wordEN)[k]
       if(resFinal.wordArtists[tWord]){
-        resFinal.wordArtists[tWord].push(resArtist.wordEN[tWord],artists[i])
+        resFinal.wordArtists[tWord].push([artists[i],resArtist.wordEN[tWord]])
       }else{
-        resFinal.wordArtists[tWord] = [resArtist.wordEN[tWord],artists[i]]
+        resFinal.wordArtists[tWord] = []
+        resFinal.wordArtists[tWord].push([artists[i],resArtist.wordEN[tWord] ])
       }
     }
     
