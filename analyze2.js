@@ -8,6 +8,23 @@ if(!fs.existsSync(finalDir)){
 
 (async ()=>{
   const resFinal = JSON.parse(await readF(resDir + 'final.txt'))
+
+  resFinal.trackPublished.sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'totalNumberOfTracks.txt',aryStringify(resFinal.trackPublished))
+
+  
+  resFinal.wordTotal.sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoIsMostVerbose.txt',aryStringify(resFinal.wordTotal))
+
+  resFinal.avgUnique.sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoIsMostCreative.txt',aryStringify(resFinal.avgUnique))
+
   //sort word objects by its frequency
   let sortable = []
   for (elWord in resFinal.wordKR) {
@@ -22,17 +39,6 @@ if(!fs.existsSync(finalDir)){
 
   await writeF(finalDir + 'mostUsedKoreanWord.txt', aryStringify(KRsorted))
   
-  
-  /*
-  for(var i = 0;i > 30;i ++){
-    //FIND TOP 30 MOST USED WORD FROM HERE
-    const tWord = KRsorted[i][0]
-    resFinal.wordArtists[tWord].sort((a,b)=>{
-      return b[1] - a[1]
-    })
-  }
-  */
-
   let lover = resFinal.wordArtists['사랑'].sort((a,b)=>{
     return b[1] - a[1]
   })
