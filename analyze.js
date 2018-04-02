@@ -23,7 +23,7 @@ const wp = new wordpos();
   }
 
   for(var i=0;i < artists.length; i++){
-     console.log(`-------analyzing ${i+ 1} / ${artists.length + 1} artists------------`)
+     console.log(`-------analyzing ${i+ 1} / ${artists.length} artists------------`)
     //loading up individual artist
     const tracks = await readD(resDir + artists[i])
 
@@ -57,7 +57,7 @@ const wp = new wordpos();
 
       resAnal.map(elMorp=>{
         const targetType = elMorp[1]
-        const targetWord = elMorp[0]
+        const targetWord = elMorp[0].toLowerCase()
         if(targetType === 'NNG'){ //if the word is a distinctive noun
           trackKR ++
           trackTotal ++
@@ -152,7 +152,6 @@ const wp = new wordpos();
     resFinal.avgUnique.push([artists[i],resArtist.avgUnique])
     console.log(`the ${artists[i]} average of KR vs EN : ${resArtist.avgKR} vs ${resArtist.avgEN}`)
    //resFinal[artists[i]] = Object.assign(resArtist)
-    resFinal.trackPublished.push([artists[i],tracks.length])
 
   }
   //console.log(resFinal)

@@ -9,6 +9,7 @@ if(!fs.existsSync(finalDir)){
 (async ()=>{
   const resFinal = JSON.parse(await readF(resDir + 'final.txt'))
 
+
   resFinal.trackPublished.sort((a,b)=>{
     return b[1] - a[1]
   })
@@ -58,6 +59,18 @@ if(!fs.existsSync(finalDir)){
   await writeF(finalDir + 'WhoPoopTheMost.txt',aryStringify(poop))
   poop = []
 
+  let money = resFinal.wordArtists['돈'].sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoMoneyTheMost.txt',aryStringify(money))
+  money = []
+
+  let friend = resFinal.wordArtists['친구'].sort((a,b)=>{
+    return b[1] - a[1]
+  })
+  await writeF(finalDir + 'WhoFriendTheMost.txt',aryStringify(friend))
+  friend = []
+
   sortable = []
   for (elWord in resFinal.wordEN) {
     sortable.push([elWord, resFinal.wordEN[elWord]])
@@ -86,8 +99,9 @@ if(!fs.existsSync(finalDir)){
 
 function aryStringify(targetArray){
   return targetArray.map(el=>{
-    return el[0].replace(/\s/g, '') + ',' + el[1] + '\r\n'
-  }).join(' ')
+    //return el[0].replace(/\s/g, '') + ',' + el[1] + '\n'
+    return `"${el[0]}",${el[1]}\r\n`
+  }).join('')
 }
 
 
@@ -101,7 +115,7 @@ function readD(targetDir){
 
 function writeF(targetFile,content){
   return new Promise((resolve,reject)=>{
-    fs.writeFile(targetFile,content,(err)=>{
+    fs.writeFile(targetFile,'\uFEFF' + content, { encoding: 'utf8' },(err)=>{
       if(err) console.log(err)
       return resolve(err)
     })
